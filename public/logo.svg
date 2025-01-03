@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 150" role="img" aria-labelledby="title">
+  <title id="title">ANIMARIN Text Logo</title>
+  
+  <!-- ANIMARIN Text -->
+  <text x="50%" y="50%" font-family="'Comic Sans MS', sans-serif" font-weight="bold" font-size="72" fill="#ff0000" stroke="#ffffff" stroke-width="3" text-anchor="middle" dominant-baseline="middle">
+    ANIMARIN
+  </text>
+</svg>
