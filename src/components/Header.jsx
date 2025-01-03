@@ -37,7 +37,7 @@ const Navbar = () => {
         <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
             <div className="max-w-screen-xl mx-auto px-4 py-3 flex justify-between items-center">
                 <div className="w-32 flex items-center cursor-pointer">
-                    <img src="/public/logo.svg" alt="logo" />
+                    <img src="/logo.svg" alt="logo" />
                 </div>
 
                 <ul className="hidden md:flex space-x-6">

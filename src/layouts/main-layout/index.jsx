@@ -11,7 +11,7 @@ const MainLayout = () => {
       <div
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: "url(/public/24a3bc7f939ba49ecc054061dccbac61.jpg)",
+          backgroundImage: "url(/24a3bc7f939ba49ecc054061dccbac61.jpg)",
           backgroundAttachment: 'fixed',
           backgroundPosition: 'center',
           backgroundSize: 'cover',

@@ -17,7 +17,7 @@ const Drawer = () => {
     return (
         <div className="p-2 flex flex-col items-center">
             <div className="w-52">
-                <img src="/public/logo.svg" alt="logo" />
+                <img src="/logo.svg" alt="logo" />
             </div>
             <form >
                 <input value={search} onChange={(e) => setSearch(e.target.value)} className='bg-gray-100 px-4 py-2 rounded-lg md:hidden dark:bg-gray-700 dark:text-white ' type="text" placeholder="Поиск" />
