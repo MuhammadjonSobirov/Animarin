@@ -11,8 +11,8 @@ const Router = () => {
         <Route path="/" element={<MainLayout />} >
           <Route index element={<HomePage />} />
           <Route path="/releases" element={<Releases />} />
-          <Route path="/unit/:id" element={<Unit />} />/
-       </Route>
+          <Route path="/unit/:id" element={<Unit />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )
