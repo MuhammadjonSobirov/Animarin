@@ -49,10 +49,10 @@ const Unit = () => {
         <div className="dark:text-white xl:flex gap-3 justify-between mb-4 ">
             {/* Anime haqida umumiy ma’lumot */}
             <div className="max-w-[800px] w-full">
-                <div className="flex mb-5 pr-2 items-center rounded-l-full sm:rounded-full bg-green-100 dark:bg-gray-800">
+                <div className="flex mb-5  pr-2 items-center rounded-l-full sm:rounded-full bg-green-100 dark:bg-gray-800">
                     <div>
                         <img
-                            className="w-20 h-20 md:w-28 md:h-28 rounded-full"
+                            className="w-20 min-w-20 h-20 md:w-28 md:min-w-28 md:h-28 rounded-full"
                             src={data?.img || "https://via.placeholder.com/150"} // Tasvir bo‘lmasa, zaxira tasvir
                             alt={data?.name || "Anime"}
                         />
@@ -81,6 +81,7 @@ const Unit = () => {
                 </div>
 
                 {/* Epizodlar ro‘yxati */}
+
                 <ul className="grid grid-cols-3 md:grid-cols-4 p-4 gap-2">
                     {data?.episodes && Array.isArray(data.episodes) ? (
                         data.episodes.map((episode, index) => (

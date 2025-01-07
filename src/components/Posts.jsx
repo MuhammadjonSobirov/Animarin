@@ -63,7 +63,7 @@ const Read = () => {
       {/* Display filtered data */}
       {filteredDataByGenre.length === 0 ? (
         <div className="text-center text-gray-600 dark:text-gray-300">
-          No anime found matching your criteria
+          <p>По вашему запросу ничего не найдено</p>
         </div>
       ) : (
         <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -86,7 +86,7 @@ const Read = () => {
                     Жанры: {item.janr?.length > 0 ? item.janr.map((genre) => genre.name).join(" , ") : "Не указано"}
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
-                    Season: {item.season || "N/A"}, Episodes: {item.episode_count || "N/A"}
+                    Сезон: {item.season || "N/A"}, Серия: {item.episode_count || "N/A"}
                   </p>
                 </div>
               </div>

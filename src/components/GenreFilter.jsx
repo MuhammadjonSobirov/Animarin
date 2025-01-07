@@ -15,7 +15,7 @@ const GenreFilter = ({ genres }) => {
 
   return (
     <div
-      className="grid  gap-2 max-h-[300px] md:max-h-[400px] lg:max-h-[600px] overflow-y-auto rounded-lg p-4 bg-white dark:bg-gray-800"
+      className="grid  gap-2 max-h-[200px] lg:max-h-[600px] overflow-y-auto rounded-lg p-4 bg-white dark:bg-gray-800"
     >
       {genres.map((genre, index) => (
         <label key={index} className="text-md flex items-center space-x-2">

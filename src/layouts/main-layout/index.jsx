@@ -38,9 +38,11 @@ const MainLayout = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-grow pt-10 sm:px-28 text-center overflow-y-auto">
+        {drawer ? (<div onClick={toggleDrawer} className="flex-grow pt-10 sm:px-28 text-center overflow-y-auto">
           <Outlet />
-        </div>
+        </div>) : (<div className="flex-grow pt-10 sm:px-28 text-center overflow-y-auto">
+          <Outlet />
+        </div>)}
 
         <Footer />
       </div>
