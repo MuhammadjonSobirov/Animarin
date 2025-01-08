@@ -4,57 +4,96 @@ import app from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const auth = getAuth(app);
-  const navigate = useNavigate();
+  const [email, setEmail] = useState(""); // Email holati
+  const [password, setPassword] = useState(""); // Parol holati
+  const [error, setError] = useState(null); // Xatoliklarni boshqarish
+  const [isLoading, setIsLoading] = useState(false); // Yuklash indikator
+  const auth = getAuth(app); // Firebase auth
+  const navigate = useNavigate(); // Router yo‘naltiruvchi
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Yuklashni boshlash
+    setError(null); // Xatolikni tozalash
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       console.log("Logged in as:", userCredential.user);
-      navigate("/");
-      setError(null); // Xatolikni tozalash
+      navigate("/"); // Bosh sahifaga yo‘naltirish
     } catch (err) {
       console.error("Login error:", err.message);
-      setError("Ошибка входа. Пожалуйста, проверьте ваш email и пароль.");
+      setError("Ошибка входа. Проверьте ваш email и пароль."); // Xatolik xabari
+    } finally {
+      setIsLoading(false); // Yuklashni tugatish
     }
   };
 
   return (
-    <div className="container px-6">
-      <div className="text-center max-w-80 bg-white rounded-xl p-4 mx-auto dark:bg-inherit border">
-        <form className="flex flex-col" onSubmit={handleLogin}>
-          <input
-            className="mb-4 p-1 lg:p-2 bg-inherit border border-gray-400 rounded dark:text-white"
-            type="text"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            className="mb-4 p-1 lg:p-2 bg-inherit border border-gray-400 rounded dark:text-white"
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-1 px-2 lg:py-2 lg:px-4 rounded"
-            type="submit"
-          >
-            Войти
-          </button>
+    <div className="flex items-center  justify-center min-h-screen px-4 sm:px-6 lg:px-8 ">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 md:p-8">
+        <h2 className="text-center text-2xl font-extrabold text-gray-900 dark:text-white">
+          Вход в аккаунт
+        </h2>
+        <form onSubmit={handleLogin} className="mt-6 space-y-6">
+          {/* Email input */}
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-start text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              className="mt-1 block w-full p-2 text-sm border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Введите ваш email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+          {/* Password input */}
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-start text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Пароль
+            </label>
+            <input
+              id="password"
+              type="password"
+              className="mt-1 block w-full p-2 text-sm border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Введите ваш пароль"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          {/* Error Message */}
+          {error && <p className="text-sm text-red-500">{error}</p>}
+          {/* Submit Button */}
+          <div>
+            <button
+              type="submit"
+              className={`w-full py-2 px-4 text-sm font-medium text-white rounded-md ${
+                isLoading ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-600"
+              } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+              disabled={isLoading}
+            >
+              {isLoading ? "Загрузка..." : "Войти"}
+            </button>
+          </div>
         </form>
-        <p className="mt-4 text-xs lg:text-sm dark:text-white">
-          У вас нет аккаунта?
-          <span onClick={() => navigate("/register")} className="text-blue-500 cursor-pointer ml-4">
-             Зарегистраться
+        {/* Register redirect */}
+        <p className="mt-4 text-center text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+          У вас нет аккаунта?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-blue-500 ml-2 hover:text-blue-600 cursor-pointer"
+          >
+            Зарегистрироваться
           </span>
         </p>
       </div>
