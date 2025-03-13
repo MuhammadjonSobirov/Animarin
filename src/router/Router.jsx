@@ -6,6 +6,7 @@ import Unit from "../pages/unit"
 import Login from "../pages/login"
 import Register from "../pages/register"
 import Profile from "../pages/profile"
+import Favorite from "../pages/favorite"
 
 const Router = () => {
   return (
@@ -18,6 +19,7 @@ const Router = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/favorite" element={<Favorite />} />
         </Route>
       </Routes>
     </BrowserRouter>

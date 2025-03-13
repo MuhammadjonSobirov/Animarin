@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react';
 import { MdDarkMode } from "react-icons/md";
 import { MdOutlineLightMode } from "react-icons/md";
 import { FaRegUser } from "react-icons/fa6";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useStore from '../zustand/store';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from "../firebaseConfig";
+import { FaRegStar } from "react-icons/fa";
+
 
 const Navbar = () => {
   const [user, setUser] = useState(null);
   const auth = getAuth(app);
+  const navigate = useNavigate();
 
   const { toggleDrawer, search, setSearch } = useStore();
 
@@ -66,6 +69,7 @@ const Navbar = () => {
           <input value={search} onChange={(e) => setSearch(e.target.value)} className='bg-gray-100 px-4 hidden md:block py-2 rounded-lg dark:bg-gray-800 dark:text-white ' type="text" placeholder="Поиск" />
         </form>
         <div className="flex items-center space-x-4">
+          <FaRegStar onClick={() => navigate('/favorite')}  className="w-6 h-6 text-gray-900 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500" />
           <button
             onClick={toggleDarkMode}
             className="flex items-center text-gray-900 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-lg"
