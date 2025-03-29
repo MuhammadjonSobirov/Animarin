@@ -7,6 +7,7 @@ import Login from "../pages/login"
 import Register from "../pages/register"
 import Profile from "../pages/profile"
 import Favorite from "../pages/favorite"
+import Episode from "../pages/unit/episode"
 
 const Router = () => {
   return (
@@ -15,7 +16,9 @@ const Router = () => {
         <Route path="/" element={<MainLayout />} >
           <Route index element={<HomePage />} />
           <Route path="/releases" element={<Releases />} />
-          <Route path="/unit/:id" element={<Unit />} />
+          <Route path="unit/:id" element={<Unit />}>
+            <Route path="episode/:linkId" element={<Episode />} /> {/* Epizodni chiqarish */}
+          </Route>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />

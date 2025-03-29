@@ -1,87 +1,96 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../../components/Loading";
-import { getDatabase, ref, get, set } from "firebase/database";
+import { getDatabase, ref, get, push } from "firebase/database";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import app from '../../firebaseConfig';
+import { useMutation, useQuery } from "@tanstack/react-query";
+
+const fetchAnime = async (id) => {
+    const db = getDatabase(app);
+    const animeRef = ref(db, `movies/animes/${id}`);
+    const snapshot = await get(animeRef);
+    if (!snapshot.exists()) {
+        throw new Error("Anime topilmadi!");
+    }
+    return snapshot.val();
+};
+
+const fetchComments = async (id) => {
+    const db = getDatabase(app);
+    const commentsRef = ref(db, `movies/animes/${id}/comments`);
+    const snapshot = await get(commentsRef);
+    if (!snapshot.exists()) return [];
+    return Object.values(snapshot.val());
+};
 
 const Unit = () => {
     const { id } = useParams();
     const auth = getAuth(app);
-    const [data, setData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [link, setLink] = useState("");
-    const [selectedEpisode, setSelectedEpisode] = useState(null);
-    const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState("");
+    const navigate = useNavigate();
     const [currentUser, setCurrentUser] = useState(null);
+    const [newComment, setNewComment] = useState("");
+    const [link, setLink] = useState(false);
+    const [selectedEpisode, setSelectedEpisode] = useState(null);
+    const [isExpanded, setIsExpanded] = useState(false);
+    
+
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-            setCurrentUser(user); // Foydalanuvchini holatini saqlash
+            setCurrentUser(user);
         });
-
-        return () => unsubscribe(); // Komponent unmount bo‘lganda unsubscribe qilish
+        return () => unsubscribe();
     }, []);
 
+    const { data, isLoading, error } = useQuery({
+        queryKey: ["anime", id],
+        queryFn: () => fetchAnime(id),
+        enabled: !!id,
+    });
+
+    const { data: fetchedComments = [], refetch } = useQuery({
+        queryKey: ["comments", id],
+        queryFn: () => fetchComments(id),
+        enabled: !!id,
+    });
+    const [comments, setComments] = useState(fetchedComments || []);
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const db = getDatabase(app);
-                const animeRef = ref(db, `movies/animes/${id}`);
-                const snapshot = await get(animeRef);
+        if (fetchedComments) {
+            setComments(fetchedComments);
+        }
+    }, [fetchedComments]);
 
-                if (snapshot.exists()) {
-                    const animeData = snapshot.val();
-                    setData(animeData);
-                    setComments(animeData.comments || []); // Kommentlarni yuklash
-                } else {
-                    setError("Anime topilmadi!");
-                }
-            } catch (error) {
-                setError(`Xatolik yuz berdi: ${error.message}`);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [id]);
-
-    const handleComment = async (e) => {
-        e.preventDefault();
-
-        if (!newComment.trim()) return; // Bo‘sh kommentni yubormaslik
-
-        try {
+    const commentMutation = useMutation({
+        mutationFn: async (newCommentData) => {
             const db = getDatabase(app);
             const commentsRef = ref(db, `movies/animes/${id}/comments`);
+            await push(commentsRef, newCommentData);
+        },
+        onSuccess: () => {
+            refetch();
+        },
+    });
 
-            const newCommentData = {
-                name: currentUser ? currentUser.displayName || "No Name" : "No Name",
-                text: newComment,
-            };
+    const handleComment = (e) => {
+        e.preventDefault();
+        if (!newComment.trim()) return;
 
-            // Yangi kommentni arrayning boshiga qo‘shamiz
-            const updatedComments = [newCommentData, ...comments];
+        const newCommentData = {
+            name: currentUser ? currentUser.displayName || "No Name" : "No Name",
+            text: newComment,
+        };
 
-            await set(commentsRef, updatedComments); // Firebase-ga saqlash
-
-            setComments(updatedComments); // Lokal state-ni yangilash
-            setNewComment(""); // Inputni tozalash
-        } catch (error) {
-            setError(`Xatolik yuz berdi: ${error.message}`);
-        }
+        commentMutation.mutate(newCommentData);
+        setNewComment("");
     };
 
-    if (isLoading) {
-        return <LoadingSpinner />;
-    }
+    if (isLoading) return <LoadingSpinner />;
+    if (error) return <div className="text-center text-red-600">{error.message}</div>;
 
-    if (error) {
-        return <div className="text-center text-red-600">{error}</div>;
-    }
+    const shortText = data?.description ? data.description.slice(0, 200) + "..." : "";
+
+
 
     return (
         <div className="dark:text-white xl:flex gap-3 justify-between mb-4">
@@ -105,16 +114,8 @@ const Unit = () => {
                     )}
                 </div>
 
-                <div className="mb-5 px-3">
-                    {link && (
-                        <iframe
-                            src={`${link}/preview`}
-                            className="w-full h-[300px] sm:h-[300px] md:h-[500px] rounded-2xl"
-                            frameBorder="0"
-                            allow="autoplay; encrypted-media; fullscreen"
-                            allowFullScreen
-                        ></iframe>
-                    )}
+                <div>
+                    <Outlet />
                 </div>
 
                 <ul className="grid grid-cols-3 md:grid-cols-4 p-4 gap-2">
@@ -122,8 +123,9 @@ const Unit = () => {
                         data.episodes.map((episode, index) => (
                             <li
                                 onClick={() => {
-                                    setLink(episode.link);
+                                    navigate(`episode/${episode.linkId}`);
                                     setSelectedEpisode(index + 1);
+                                    setLink(episode.link);
                                 }}
                                 key={index}
                                 className="mb-2 cursor-pointer text-sm sm:text-lg bg-green-100 dark:bg-gray-800 px-3 py-2 rounded-lg md:text-2xl"
@@ -181,19 +183,13 @@ const Unit = () => {
 
             <div className="bg-green-100 dark:bg-gray-800 h-full rounded-2xl p-4 w-[90%] ml-auto mr-auto lg:w-[800px] lg:ml-0 lg:mr-0 xl:max-w-[400px]">
                 <p className="text-[12px] text-left sm:text-sm md:text-lg border-b py-4 mb-3 border-black dark:text-gray-300 dark:border-white">
-                    Жанры: {data.janr?.length > 0 ? data.janr.map((genre) => genre.name).join(", ") : "Не указано"}
+                    Жанры: {data?.janr?.length > 0 ? data.janr.map((genre) => genre.name).join(", ") : "Не указано"}
                 </p>
                 <p className="text-sm sm:text-lg md:text-2xl">
-                    {isDescriptionExpanded
-                        ? data.description
-                        : data.description?.slice(0, 200) + (data.description?.length > 100 ? '...' : '')
-                    }
-                    {data.description?.length > 100 && (
-                        <button
-                            onClick={() => setIsDescriptionExpanded((prev) => !prev)}
-                            className="ml-2 text-blue-500 hover:text-blue-700"
-                        >
-                            {isDescriptionExpanded ? 'Скрыть' : 'Читать далее'}
+                    {isExpanded ? data?.description : shortText}
+                    {data?.description?.length > 200 && (
+                        <button onClick={() => setIsExpanded(!isExpanded)} className="ml-2 text-blue-500 hover:text-blue-700">
+                            {isExpanded ? "Скрыть" : "Читать далее"}
                         </button>
                     )}
                 </p>
@@ -234,8 +230,6 @@ const Unit = () => {
                         <p className="text-gray-500">Комментариев пока нет.</p>
                     )}
                 </div>
-
-
             </div>
         </div>
     );

@@ -9,12 +9,12 @@ const Favorite = () => {
   return (
     <div className="px-4 py-6">
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6 text-center">
-        Sevimli animelar
+        Избранное
       </h2>
 
       {favorites.length === 0 ? (
         <p className="text-center text-gray-600 dark:text-gray-300">
-          Sevimlilarga hech narsa qo‘shilmagan
+          Пока ничего нет
         </p>
       ) : (
         <ul className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
